@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1b1d1f">
+<meta name="color-scheme" content="light dark">
+<title>ЦНАП Дорослого Життя</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Press+Start+2P&display=swap&subset=cyrillic" rel="stylesheet">
+<style>
+:root{--paper:#f4efe3}body{margin:0;background:var(--paper)}
+
+</style>
+</head>
+<body>
+<header class="board" id="board" aria-live="polite">
+  <div class="board__row">
+    <span class="board__led" id="boardMain">ЕЛЕКТРОННА ЧЕРГА</span>
+  </div>
+  <div class="board__row board__row--sub">
+    <span class="board__led board__led--small" id="boardProgress"></span>
+    <span class="board__led board__led--small board__seals" id="boardSeals"></span>
+  </div>
+</header>
+<main class="desk" id="app"></main>
+<script type="application/json" id="scenario">{"meta":{"title":"ЦНАП Дорослого Життя","totalSeals":12,"maxSealsPerWindow":4,"timing":{"intro":[2,3],"freeQuestion":[3,4],"windowOverhead":[0.5,1],"scale":[0.3,0.5],"situation":[1,2],"seals":[0.5,1],"finale":[5,7]}},"intro":{"clerk":["…"]},"application":{"questions":[{"id":"app_q1","text":"?"}]},"windows":[{"number":1,"key":"w1","title":"Віконце 1","clerk":{"name":"Працівник","lines":["…"]},"scale":{"id":"scale_1","question":"?","low":"1","high":"10"},"situation":{"id":"sit_1","text":"?","options":[{"id":"w1_o1","text":"?","reaction":"…","stamp":{"id":"W1_S1","title":"ШТАМП"}},{"id":"w1_o2","text":"?","reaction":"…","stamp":{"id":"W1_S2","title":"ШТАМП"}},{"id":"w1_o3","text":"?","reaction":"…","stamp":{"id":"W1_S3","title":"ШТАМП"}}]},"questions":[{"id":"w1_q1","byStamp":{"W1_S1":"?","W1_S2":"?","W1_S3":"?"}}],"seals":{"question":"?"}},{"number":2,"key":"w2","title":"Віконце 2","clerk":{"name":"Працівник","lines":["…"]},"scale":{"id":"scale_2","question":"?","low":"1","high":"10"},"situation":{"id":"sit_2","text":"?","options":[{"id":"w2_o1","text":"?","reaction":"…","stamp":{"id":"W2_S1","title":"ШТАМП"}},{"id":"w2_o2","text":"?","reaction":"…","stamp":{"id":"W2_S2","title":"ШТАМП"}},{"id":"w2_o3","text":"?","reaction":"…","stamp":{"id":"W2_S3","title":"ШТАМП"}}]},"questions":[{"id":"w2_q1","byStamp":{"W2_S1":"?","W2_S2":"?","W2_S3":"?"}}],"seals":{"question":"?"}},{"number":3,"key":"w3","title":"Віконце 3","clerk":{"name":"Працівник","lines":["…"]},"scale":{"id":"scale_3","question":"?","low":"1","high":"10"},"situation":{"id":"sit_3","text":"?","options":[{"id":"w3_o1","text":"?","reaction":"…","stamp":{"id":"W3_S1","title":"ШТАМП"}},{"id":"w3_o2","text":"?","reaction":"…","stamp":{"id":"W3_S2","title":"ШТАМП"}},{"id":"w3_o3","text":"?","reaction":"…","stamp":{"id":"W3_S3","title":"ШТАМП"}}]},"questions":[{"id":"w3_q1","byStamp":{"W3_S1":"?","W3_S2":"?","W3_S3":"?"}}],"seals":{"question":"?"}},{"number":4,"key":"w4","title":"Віконце 4","clerk":{"name":"Працівник","lines":["…"]},"scale":{"id":"scale_4","question":"?","low":"1","high":"10"},"situation":{"id":"sit_4","text":"?","options":[{"id":"w4_o1","text":"?","reaction":"…","stamp":{"id":"W4_S1","title":"ШТАМП"}},{"id":"w4_o2","text":"?","reaction":"…","stamp":{"id":"W4_S2","title":"ШТАМП"}},{"id":"w4_o3","text":"?","reaction":"…","stamp":{"id":"W4_S3","title":"ШТАМП"}}]},"questions":[{"id":"w4_q1","byStamp":{"W4_S1":"?","W4_S2":"?","W4_S3":"?"}}],"seals":{"question":"?"}},{"number":5,"key":"w5","title":"Віконце 5","clerk":{"name":"Працівник","lines":["…"]},"scale":{"id":"scale_5","question":"?","low":"1","high":"10"},"situation":{"id":"sit_5","text":"?","options":[{"id":"w5_o1","text":"?","reaction":"…","stamp":{"id":"W5_S1","title":"ШТАМП"}},{"id":"w5_o2","text":"?","reaction":"…","stamp":{"id":"W5_S2","title":"ШТАМП"}},{"id":"w5_o3","text":"?","reaction":"…","stamp":{"id":"W5_S3","title":"ШТАМП"}}]},"questions":[{"id":"w5_q1","byStamp":{"W5_S1":"?","W5_S2":"?","W5_S3":"?"}}],"seals":{"question":"?"}},{"number":6,"key":"w6","title":"Віконце 6","clerk":{"name":"Працівник","lines":["…"]},"scale":{"id":"scale_6","question":"?","low":"1","high":"10"},"situation":{"id":"sit_6","text":"?","options":[{"id":"w6_o1","text":"?","reaction":"…","stamp":{"id":"W6_S1","title":"ШТАМП"}},{"id":"w6_o2","text":"?","reaction":"…","stamp":{"id":"W6_S2","title":"ШТАМП"}},{"id":"w6_o3","text":"?","reaction":"…","stamp":{"id":"W6_S3","title":"ШТАМП"}}]},"questions":[{"id":"w6_q1","byStamp":{"W6_S1":"?","W6_S2":"?","W6_S3":"?"}}],"seals":{"question":"?"}}]}</script>
+<script>
+/* ==== md.js ==== */
+// Мінімальний markdown → HTML (заповнюється у спрінті 5).
+var CnapMd = { render: function (s) { return String(s); } };
+
+;
+/* ==== prompt.js ==== */
+// Складання промту для AI (заповнюється у спрінті 5).
+var CnapPrompt = {};
+
+;
+/* ==== api.js ==== */
+// Запит до Anthropic Messages API (заповнюється у спрінті 5).
+var CnapApi = {};
+
+;
+/* ==== app.js ==== */
+// Двигун гри. Весь стан — в одному об'єкті state (у v2 його легко зберегти в localStorage).
+(function () {
+  'use strict';
+  var scenario = JSON.parse(document.getElementById('scenario').textContent);
+  var state = { version: 1, step: 0, ticket: null, name: '', answers: {}, scales: {}, choices: {}, stamps: {}, seals: {} };
+  document.getElementById('app').textContent = scenario.meta.title + ' — каркас готовий.';
+  window.CNAP = { state: state, scenario: scenario };
+})();
+
+</script>
+</body>
+</html>

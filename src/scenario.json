@@ -1,0 +1,430 @@
+{
+  "meta": {
+    "title": "ЦНАП Дорослого Життя",
+    "totalSeals": 12,
+    "maxSealsPerWindow": 4,
+    "timing": {
+      "intro": [
+        2,
+        3
+      ],
+      "freeQuestion": [
+        3,
+        4
+      ],
+      "windowOverhead": [
+        0.5,
+        1
+      ],
+      "scale": [
+        0.3,
+        0.5
+      ],
+      "situation": [
+        1,
+        2
+      ],
+      "seals": [
+        0.5,
+        1
+      ],
+      "finale": [
+        5,
+        7
+      ]
+    }
+  },
+  "intro": {
+    "clerk": [
+      "…"
+    ]
+  },
+  "application": {
+    "questions": [
+      {
+        "id": "app_q1",
+        "text": "?"
+      }
+    ]
+  },
+  "windows": [
+    {
+      "number": 1,
+      "key": "w1",
+      "title": "Віконце 1",
+      "clerk": {
+        "name": "Працівник",
+        "lines": [
+          "…"
+        ]
+      },
+      "scale": {
+        "id": "scale_1",
+        "question": "?",
+        "low": "1",
+        "high": "10"
+      },
+      "situation": {
+        "id": "sit_1",
+        "text": "?",
+        "options": [
+          {
+            "id": "w1_o1",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W1_S1",
+              "title": "ШТАМП"
+            }
+          },
+          {
+            "id": "w1_o2",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W1_S2",
+              "title": "ШТАМП"
+            }
+          },
+          {
+            "id": "w1_o3",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W1_S3",
+              "title": "ШТАМП"
+            }
+          }
+        ]
+      },
+      "questions": [
+        {
+          "id": "w1_q1",
+          "byStamp": {
+            "W1_S1": "?",
+            "W1_S2": "?",
+            "W1_S3": "?"
+          }
+        }
+      ],
+      "seals": {
+        "question": "?"
+      }
+    },
+    {
+      "number": 2,
+      "key": "w2",
+      "title": "Віконце 2",
+      "clerk": {
+        "name": "Працівник",
+        "lines": [
+          "…"
+        ]
+      },
+      "scale": {
+        "id": "scale_2",
+        "question": "?",
+        "low": "1",
+        "high": "10"
+      },
+      "situation": {
+        "id": "sit_2",
+        "text": "?",
+        "options": [
+          {
+            "id": "w2_o1",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W2_S1",
+              "title": "ШТАМП"
+            }
+          },
+          {
+            "id": "w2_o2",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W2_S2",
+              "title": "ШТАМП"
+            }
+          },
+          {
+            "id": "w2_o3",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W2_S3",
+              "title": "ШТАМП"
+            }
+          }
+        ]
+      },
+      "questions": [
+        {
+          "id": "w2_q1",
+          "byStamp": {
+            "W2_S1": "?",
+            "W2_S2": "?",
+            "W2_S3": "?"
+          }
+        }
+      ],
+      "seals": {
+        "question": "?"
+      }
+    },
+    {
+      "number": 3,
+      "key": "w3",
+      "title": "Віконце 3",
+      "clerk": {
+        "name": "Працівник",
+        "lines": [
+          "…"
+        ]
+      },
+      "scale": {
+        "id": "scale_3",
+        "question": "?",
+        "low": "1",
+        "high": "10"
+      },
+      "situation": {
+        "id": "sit_3",
+        "text": "?",
+        "options": [
+          {
+            "id": "w3_o1",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W3_S1",
+              "title": "ШТАМП"
+            }
+          },
+          {
+            "id": "w3_o2",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W3_S2",
+              "title": "ШТАМП"
+            }
+          },
+          {
+            "id": "w3_o3",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W3_S3",
+              "title": "ШТАМП"
+            }
+          }
+        ]
+      },
+      "questions": [
+        {
+          "id": "w3_q1",
+          "byStamp": {
+            "W3_S1": "?",
+            "W3_S2": "?",
+            "W3_S3": "?"
+          }
+        }
+      ],
+      "seals": {
+        "question": "?"
+      }
+    },
+    {
+      "number": 4,
+      "key": "w4",
+      "title": "Віконце 4",
+      "clerk": {
+        "name": "Працівник",
+        "lines": [
+          "…"
+        ]
+      },
+      "scale": {
+        "id": "scale_4",
+        "question": "?",
+        "low": "1",
+        "high": "10"
+      },
+      "situation": {
+        "id": "sit_4",
+        "text": "?",
+        "options": [
+          {
+            "id": "w4_o1",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W4_S1",
+              "title": "ШТАМП"
+            }
+          },
+          {
+            "id": "w4_o2",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W4_S2",
+              "title": "ШТАМП"
+            }
+          },
+          {
+            "id": "w4_o3",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W4_S3",
+              "title": "ШТАМП"
+            }
+          }
+        ]
+      },
+      "questions": [
+        {
+          "id": "w4_q1",
+          "byStamp": {
+            "W4_S1": "?",
+            "W4_S2": "?",
+            "W4_S3": "?"
+          }
+        }
+      ],
+      "seals": {
+        "question": "?"
+      }
+    },
+    {
+      "number": 5,
+      "key": "w5",
+      "title": "Віконце 5",
+      "clerk": {
+        "name": "Працівник",
+        "lines": [
+          "…"
+        ]
+      },
+      "scale": {
+        "id": "scale_5",
+        "question": "?",
+        "low": "1",
+        "high": "10"
+      },
+      "situation": {
+        "id": "sit_5",
+        "text": "?",
+        "options": [
+          {
+            "id": "w5_o1",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W5_S1",
+              "title": "ШТАМП"
+            }
+          },
+          {
+            "id": "w5_o2",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W5_S2",
+              "title": "ШТАМП"
+            }
+          },
+          {
+            "id": "w5_o3",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W5_S3",
+              "title": "ШТАМП"
+            }
+          }
+        ]
+      },
+      "questions": [
+        {
+          "id": "w5_q1",
+          "byStamp": {
+            "W5_S1": "?",
+            "W5_S2": "?",
+            "W5_S3": "?"
+          }
+        }
+      ],
+      "seals": {
+        "question": "?"
+      }
+    },
+    {
+      "number": 6,
+      "key": "w6",
+      "title": "Віконце 6",
+      "clerk": {
+        "name": "Працівник",
+        "lines": [
+          "…"
+        ]
+      },
+      "scale": {
+        "id": "scale_6",
+        "question": "?",
+        "low": "1",
+        "high": "10"
+      },
+      "situation": {
+        "id": "sit_6",
+        "text": "?",
+        "options": [
+          {
+            "id": "w6_o1",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W6_S1",
+              "title": "ШТАМП"
+            }
+          },
+          {
+            "id": "w6_o2",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W6_S2",
+              "title": "ШТАМП"
+            }
+          },
+          {
+            "id": "w6_o3",
+            "text": "?",
+            "reaction": "…",
+            "stamp": {
+              "id": "W6_S3",
+              "title": "ШТАМП"
+            }
+          }
+        ]
+      },
+      "questions": [
+        {
+          "id": "w6_q1",
+          "byStamp": {
+            "W6_S1": "?",
+            "W6_S2": "?",
+            "W6_S3": "?"
+          }
+        }
+      ],
+      "seals": {
+        "question": "?"
+      }
+    }
+  ]
+}
