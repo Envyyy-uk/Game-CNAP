@@ -100,7 +100,7 @@
     if (!state.ticket) main = U.board.idle;
     else if (step.type === 'intro' || step.type === 'appQuestion') { main = fmt(U.board.registry, vars); progress = 'ЗАЯВА Ф-1'; }
     else if (step.w) { main = fmt(U.board.window, vars); progress = fmt(U.board.progress, vars); }
-    else { main = fmt(U.board.finale, vars); progress = 'ВІКОНЦЕ 6/6 ✓'; }
+    else { main = fmt(U.board.finale, vars); progress = 'ВІКОНЦЕ 6/6'; }
 
     boardMain.textContent = main;
     boardProgress.textContent = progress;

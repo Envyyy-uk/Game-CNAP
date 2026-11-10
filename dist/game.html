@@ -8,9 +8,506 @@
 <title>ЦНАП Дорослого Життя</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Press+Start+2P&display=swap&subset=cyrillic" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#f4efe3}body{margin:0;background:var(--paper)}
+/* «ЦНАП Дорослого Життя» — паперова бюрократія. Mobile-first (~390px). */
+:root {
+  --desk: #d8d0bf;
+  --desk-2: #cfc6b2;
+  --paper: #fbf7ec;
+  --paper-2: #f3ecdb;
+  --ink: #23211c;
+  --ink-soft: #4a463d;
+  --muted: #776f61;
+  --line: #d6cbb3;
+  --line-strong: #b9ab8e;
+  --stamp: #2350a8;
+  --stamp-soft: rgba(35, 80, 168, 0.1);
+  --danger: #a3332b;
+  --board: #121314;
+  --board-edge: #2a2c2f;
+  --led: #ffb23a;
+  --led-dim: rgba(255, 178, 58, 0.18);
+  --led-glow: rgba(255, 160, 40, 0.55);
+  --btn: #23211c;
+  --btn-text: #fbf7ec;
+  --shadow: 0 1px 0 rgba(0, 0, 0, 0.04), 0 10px 28px rgba(60, 45, 20, 0.16);
+  --radius: 4px;
+  --mono: "IBM Plex Mono", ui-monospace, "Courier New", monospace;
+  --serif: "PT Serif", Georgia, "Times New Roman", serif;
+  --led-font: "Press Start 2P", "IBM Plex Mono", monospace;
+  --stamp-blend: multiply;
+  --gutter: 16px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --desk: #121211;
+    --desk-2: #191816;
+    --paper: #23211d;
+    --paper-2: #2b2924;
+    --ink: #ece6d8;
+    --ink-soft: #d2cab9;
+    --muted: #a59d8c;
+    --line: #3e3a33;
+    --line-strong: #5b554a;
+    --stamp: #7ea6ff;
+    --stamp-soft: rgba(126, 166, 255, 0.12);
+    --danger: #ff8a7d;
+    --board: #050505;
+    --board-edge: #1d1e20;
+    --btn: #ece6d8;
+    --btn-text: #1a1916;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    --stamp-blend: screen;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --desk: #121211; --desk-2: #191816; --paper: #23211d; --paper-2: #2b2924;
+  --ink: #ece6d8; --ink-soft: #d2cab9; --muted: #a59d8c; --line: #3e3a33; --line-strong: #5b554a;
+  --stamp: #7ea6ff; --stamp-soft: rgba(126, 166, 255, 0.12); --danger: #ff8a7d;
+  --board: #050505; --board-edge: #1d1e20; --btn: #ece6d8; --btn-text: #1a1916;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.5); --stamp-blend: screen; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--desk);
+  background-image: radial-gradient(var(--desk-2) 1px, transparent 1px);
+  background-size: 6px 6px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-tap-highlight-color: transparent;
+}
+button, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--stamp); outline-offset: 2px; }
+[tabindex="-1"]:focus { outline: none; }
+[hidden] { display: none !important; }
+
+/* ---------- Табло ---------- */
+.board {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--board);
+  border-bottom: 3px solid var(--board-edge);
+  padding: calc(10px + env(safe-area-inset-top)) calc(var(--gutter) + env(safe-area-inset-right)) 10px calc(var(--gutter) + env(safe-area-inset-left));
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+.board::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -3px;
+  height: 3px;
+  width: var(--progress, 0%);
+  background: var(--led);
+  box-shadow: 0 0 8px var(--led-glow);
+  transition: width 0.4s ease;
+}
+.board__row { display: flex; justify-content: center; align-items: center; gap: 12px; }
+.board__row--sub { justify-content: space-between; margin-top: 8px; min-height: 14px; }
+.board__led {
+  font-family: var(--led-font);
+  color: var(--led);
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-shadow: 0 0 6px var(--led-glow);
+  /* матриця світлодіодів */
+  background-image: radial-gradient(var(--led-dim) 0.8px, transparent 1.1px);
+  background-size: 3px 3px;
+  padding: 2px 4px;
+}
+.board__led--small { font-size: 9px; background: none; }
+.board__seals { display: inline-flex; align-items: center; gap: 8px; }
+.board__dots { display: inline-flex; gap: 3px; }
+.board__dots i {
+  width: 7px; height: 7px; border-radius: 50%;
+  border: 1px solid var(--led-dim);
+  background: transparent;
+}
+.board__dots i.on { background: var(--led); border-color: var(--led); box-shadow: 0 0 4px var(--led-glow); }
+.board__led.is-switching { animation: led-switch 0.7s steps(2, end); }
+@keyframes led-switch {
+  0%, 40% { opacity: 0.1; }
+  20%, 60%, 100% { opacity: 1; }
+}
+
+/* ---------- Стіл і бланк ---------- */
+.desk {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 18px calc(var(--gutter) + env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) calc(var(--gutter) + env(safe-area-inset-left));
+}
+.sheet {
+  position: relative;
+  background: var(--paper);
+  background-image: linear-gradient(var(--paper), var(--paper-2));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px 18px 22px;
+}
+.sheet::before { /* поле для підшивки */
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: 10px;
+  border-left: 1px dashed var(--line);
+  pointer-events: none;
+}
+.sheet > * { position: relative; }
+.sheet__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line-strong);
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+}
+.sheet__ticket { white-space: nowrap; }
+.sheet__title {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 1.25;
+  margin: 0 0 14px;
+}
+.sub { font-family: var(--mono); font-size: 15px; text-transform: uppercase; letter-spacing: 0.05em; margin: 22px 0 10px; }
+.screen-in { animation: sheet-in 0.32s ease-out; }
+@keyframes sheet-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.is-shaken { animation: paper-shake 0.32s ease-out; }
+@keyframes paper-shake {
+  0% { transform: none; }
+  30% { transform: translateY(3px) scale(0.997); }
+  60% { transform: translateY(-1px); }
+  100% { transform: none; }
+}
+
+/* ---------- Лобі ---------- */
+.sheet--lobby { text-align: center; padding: 36px 22px 30px; }
+.sheet--lobby::before { display: none; }
+.lobby__emblem {
+  width: 96px; height: 96px;
+  margin: 0 auto 18px;
+  border: 3px double var(--stamp);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: var(--mono); font-weight: 600; letter-spacing: 0.08em;
+  color: var(--stamp);
+  transform: rotate(-8deg);
+}
+.lobby__hint { color: var(--muted); margin: 0 0 24px; }
+
+/* ---------- Талон ---------- */
+.ticket {
+  display: flex; flex-direction: column; align-items: center;
+  width: 210px;
+  margin: 2px auto 18px;
+  padding: 16px 12px 20px;
+  background: #fffdf6;
+  color: #23211c;
+  font-family: var(--mono);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  transform: rotate(-1.5deg);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), 95% 100%, 90% calc(100% - 8px), 85% 100%, 80% calc(100% - 8px), 75% 100%, 70% calc(100% - 8px), 65% 100%, 60% calc(100% - 8px), 55% 100%, 50% calc(100% - 8px), 45% 100%, 40% calc(100% - 8px), 35% 100%, 30% calc(100% - 8px), 25% 100%, 20% calc(100% - 8px), 15% 100%, 10% calc(100% - 8px), 5% 100%, 0 calc(100% - 8px));
+  animation: ticket-print 0.6s ease-out;
+}
+@keyframes ticket-print { from { clip-path: inset(0 0 100% 0); } }
+.ticket__caption { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #6b655a; }
+.ticket__number { font-size: 44px; font-weight: 600; letter-spacing: 0.04em; line-height: 1.15; margin: 4px 0; }
+.ticket__meta { font-size: 12px; color: #6b655a; }
+
+/* ---------- Працівник ---------- */
+.clerk { display: flex; gap: 12px; align-items: flex-start; margin: 0 0 16px; }
+.clerk__avatar {
+  flex: 0 0 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--stamp-soft);
+  border: 1.5px solid var(--stamp);
+  color: var(--stamp);
+  font-family: var(--mono); font-weight: 600; font-size: 14px;
+}
+.clerk__body {
+  flex: 1; min-width: 0;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 2px 12px 12px 12px;
+  padding: 9px 13px;
+}
+.clerk__name { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 4px; }
+.clerk__body p { margin: 0 0 6px; font-style: italic; color: var(--ink-soft); }
+.clerk__body p:last-child { margin-bottom: 0; }
+.clerk--muted { opacity: 0.8; }
+.clerk--reply { margin-top: 14px; animation: sheet-in 0.3s ease-out; }
+
+.rules { margin: 4px 0 18px; padding-left: 22px; font-size: 15.5px; }
+.rules li { margin-bottom: 8px; }
+.rules li::marker { font-family: var(--mono); color: var(--stamp); }
+
+/* ---------- Віконце ---------- */
+.window__plate {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  border: 2px solid var(--ink);
+  padding: 16px 12px;
+  margin: 2px 0 18px;
+  background: var(--paper);
+}
+.window__no { font-family: var(--mono); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.window__title { font-family: var(--mono); font-weight: 600; font-size: 32px; line-height: 1.2; margin: 4px 0; }
+.window__sub { font-size: 14.5px; color: var(--muted); font-style: italic; }
+
+/* ---------- Питання і поля ---------- */
+.qcard { margin-bottom: 14px; }
+.qcard__label { font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--stamp); margin-bottom: 6px; }
+.qcard__text { font-size: 18px; line-height: 1.5; margin: 0 0 10px; }
+.qcard__hint { font-size: 14.5px; color: var(--muted); font-style: italic; margin: 0; }
+.qcard__stampnote { display: flex; align-items: center; gap: 10px; margin: 2px 0 10px; font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; }
+
+.field { display: block; margin: 0 0 6px; }
+.field__label { display: block; font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 4px; }
+.field__hint { display: block; font-size: 13.5px; color: var(--muted); margin-top: 6px; }
+.field__input {
+  display: block; width: 100%;
+  border: 0;
+  border-bottom: 1.5px solid var(--ink);
+  background: transparent;
+  padding: 10px 2px;
+  font-family: var(--mono);
+  font-size: 17px; /* ≥16px — iOS не масштабує поле */
+  border-radius: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.field__input::placeholder { color: var(--muted); opacity: 0.7; }
+.field__input:focus { outline: none; border-bottom-color: var(--stamp); background: var(--stamp-soft); }
+.field__input--area {
+  resize: none;
+  min-height: 150px;
+  line-height: 32px;
+  padding: 0 4px;
+  border: 0;
+  overflow: hidden;
+  /* графи бланка */
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 31px, var(--line-strong) 31px, var(--line-strong) 32px);
+  background-attachment: local;
+}
+.field__input--area:focus { background-color: var(--stamp-soft); }
+.copy-fallback { margin-top: 10px; font-size: 13px; line-height: 20px; background-image: none; border: 1px solid var(--line-strong); padding: 8px; overflow: auto; }
+
+.form-error { color: var(--danger); font-size: 15px; font-style: italic; margin: 8px 0 0; min-height: 0; }
+.form-error:empty { display: none; }
+.form-error.shake { animation: err-shake 0.35s; }
+@keyframes err-shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.note { font-size: 14.5px; color: var(--muted); font-style: italic; margin: 10px 0 0; }
+
+/* ---------- Кнопки ---------- */
+.actions { display: flex; gap: 10px; margin-top: 20px; }
+.actions .btn--primary { flex: 1; }
+.btn {
+  min-height: 52px;
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 2px solid var(--btn);
+  touch-action: manipulation;
+  transition: transform 0.08s ease, background 0.15s;
+}
+.btn:active { transform: translateY(1px) scale(0.99); }
+.btn--primary { background: var(--btn); color: var(--btn-text); }
+.btn--ghost { background: transparent; color: var(--ink); }
+.btn--big { min-height: 60px; padding: 14px 30px; font-size: 16px; }
+.btn--wide { width: 100%; }
+.btn--link { background: none; border: 0; text-decoration: underline; text-transform: none; font-weight: 400; color: var(--muted); }
+.btn[disabled] { opacity: 0.35; cursor: not-allowed; }
+
+/* ---------- Шкала ---------- */
+.scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 6px 0 10px; }
+.scale__btn {
+  min-height: 56px;
+  border: 1.5px solid var(--line-strong);
+  background: var(--paper);
+  border-radius: var(--radius);
+  font-family: var(--mono); font-size: 20px; font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.scale__btn.is-on { background: var(--stamp); border-color: var(--stamp); color: var(--paper); }
+.scale__legend { display: flex; justify-content: space-between; gap: 12px; font-size: 13.5px; color: var(--muted); font-style: italic; }
+.scale__legend span:last-child { text-align: right; }
+
+/* ---------- Варіанти ---------- */
+.options { display: flex; flex-direction: column; gap: 10px; margin: 6px 0 4px; }
+.option {
+  display: flex; gap: 12px; align-items: flex-start;
+  text-align: left;
+  width: 100%;
+  min-height: 56px;
+  padding: 13px 14px;
+  border: 1.5px solid var(--line-strong);
+  background: var(--paper);
+  border-radius: var(--radius);
+  font-family: var(--serif); font-size: 16.5px; line-height: 1.45;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.option__mark {
+  flex: 0 0 28px; height: 28px;
+  display: grid; place-items: center;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  font-family: var(--mono); font-weight: 600; font-size: 14px;
+}
+.option.is-on { border-color: var(--stamp); background: var(--stamp-soft); }
+.option.is-on .option__mark { background: var(--stamp); border-color: var(--stamp); color: var(--paper); }
+
+/* ---------- Штамп ---------- */
+.stamp-slot { display: flex; justify-content: flex-end; min-height: 0; margin-top: 4px; }
+.stamp {
+  --rot: -7deg;
+  display: inline-flex; flex-direction: column; align-items: center;
+  margin: 14px 4px 0;
+  padding: 8px 14px 6px;
+  border: 3px double var(--stamp);
+  border-radius: 6px;
+  color: var(--stamp);
+  font-family: var(--mono);
+  text-transform: uppercase;
+  text-align: center;
+  transform: rotate(var(--rot));
+  mix-blend-mode: var(--stamp-blend);
+  opacity: 0.92;
+  max-width: 85%;
+}
+.stamp__title { font-weight: 600; font-size: 15px; line-height: 1.25; letter-spacing: 0.04em; }
+.stamp__date { font-size: 10.5px; letter-spacing: 0.1em; margin-top: 3px; border-top: 1px solid currentColor; padding-top: 2px; }
+.stamp--mini { --rot: -4deg; margin: 0; padding: 3px 8px 2px; border-width: 2px; max-width: 70%; }
+.stamp--mini .stamp__title { font-size: 10px; }
+.stamp--mini .stamp__date { display: none; }
+
+/* Та сама виразна анімація «гуп» — для штампів, печаток і фінальної печатки */
+.is-thud { animation: thud 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+@keyframes thud {
+  0% { transform: scale(2.3) rotate(calc(var(--rot, -7deg) - 10deg)); opacity: 0; filter: blur(2px); }
+  55% { transform: scale(0.92) rotate(var(--rot, -7deg)); opacity: 1; filter: none; }
+  75% { transform: scale(1.03) rotate(var(--rot, -7deg)); }
+  100% { transform: scale(1) rotate(var(--rot, -7deg)); opacity: 0.92; }
+}
+
+/* ---------- Печатки ---------- */
+.seals__status { font-family: var(--mono); font-size: 14px; margin: 0 0 10px; }
+.seals__left { color: var(--stamp); font-size: 16px; }
+.seals { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; max-width: 360px; }
+.seals__btn {
+  --rot: 0deg;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  min-width: 0;
+  border: 1.5px solid var(--line-strong);
+  background: var(--paper);
+  border-radius: 50%;
+  aspect-ratio: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+  padding: 4px;
+}
+.seals__num { font-family: var(--mono); font-weight: 600; font-size: 22px; line-height: 1; }
+.seals__icons { display: flex; gap: 2px; min-height: 7px; }
+.seals__icons i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: 0.6; }
+.seals__btn.is-on { background: var(--stamp); border-color: var(--stamp); color: var(--paper); box-shadow: 0 0 0 3px var(--stamp-soft); }
+.seals__btn[disabled] { opacity: 0.25; cursor: not-allowed; text-decoration: line-through; }
+.seals__comment { font-style: italic; color: var(--ink-soft); min-height: 1.5em; margin: 12px 0 0; }
+
+/* ---------- Фінал ---------- */
+.summary-wrap { overflow-x: auto; margin: 0 -4px; }
+.summary { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12.5px; }
+.summary th, .summary td { border-bottom: 1px solid var(--line); padding: 8px 4px; text-align: left; vertical-align: top; }
+.summary thead th { font-size: 10.5px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em; }
+.summary tbody th { font-weight: 600; white-space: nowrap; }
+.summary__stamp { color: var(--stamp); font-size: 11px; }
+.finale-box { border: 1.5px dashed var(--line-strong); padding: 14px; margin-top: 18px; border-radius: var(--radius); }
+.finale-box .btn--wide { margin-top: 12px; }
+.finale-box--alt .field__hint { margin-top: 0; }
+
+/* ---------- Документ-витяг ---------- */
+.doc-wrap { display: flex; flex-direction: column; gap: 16px; }
+.doc {
+  position: relative;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  padding: 22px 18px 24px;
+  outline: 1px solid var(--line-strong);
+  outline-offset: -8px;
+}
+.doc__issuer { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; color: var(--muted); border-bottom: 1px solid var(--line-strong); padding: 4px 6px 10px; }
+.doc__title { font-family: var(--mono); font-size: 18px; font-weight: 600; line-height: 1.3; text-align: center; text-transform: uppercase; letter-spacing: 0.03em; margin: 14px 0 12px; }
+.doc__number { display: inline-block; margin-top: 4px; font-size: 14px; color: var(--stamp); letter-spacing: 0.05em; }
+.doc__meta { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-family: var(--mono); font-size: 13px; margin: 0 0 16px; padding: 10px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.doc__meta dt { color: var(--muted); }
+.doc__meta dd { margin: 0; border-bottom: 1px dotted var(--line-strong); font-weight: 600; }
+.doc__waiting { font-style: italic; color: var(--muted); animation: blink 1.6s ease-in-out infinite; }
+@keyframes blink { 50% { opacity: 0.4; } }
+.doc__cursor { display: inline-block; width: 0.55em; height: 1.05em; background: var(--ink); vertical-align: text-bottom; margin-left: 2px; animation: blink 0.9s steps(2, start) infinite; }
+.doc__sign { position: relative; display: flex; justify-content: flex-end; align-items: flex-end; min-height: 150px; margin-top: 28px; }
+.doc__seal { position: absolute; left: 4px; bottom: -6px; width: 150px; height: 150px; color: var(--stamp); --rot: -12deg; transform: rotate(var(--rot)); mix-blend-mode: var(--stamp-blend); opacity: 0.92; }
+.doc__seal svg { width: 100%; height: 100%; font-family: var(--mono); }
+.doc__signature { display: flex; flex-direction: column; align-items: center; width: 56%; text-align: center; }
+.doc__scribble { width: 130px; height: 42px; color: var(--ink); }
+.doc__scribble svg { width: 100%; height: 100%; }
+.doc__line { width: 100%; border-bottom: 1px solid var(--ink); margin: 2px 0 6px; }
+.doc__role { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+.doc__footer { font-size: 12px; font-style: italic; color: var(--muted); text-align: center; margin: 26px 0 0; }
+.doc-tools { display: flex; flex-direction: column; gap: 10px; }
+
+/* Markdown усередині витягу */
+.md { font-size: 16.5px; line-height: 1.6; overflow-wrap: anywhere; }
+.md h1, .md h2, .md h3 { font-family: var(--mono); line-height: 1.3; }
+.md h1 { font-size: 18px; }
+.md h2 { font-size: 15.5px; text-transform: uppercase; letter-spacing: 0.04em; margin: 26px 0 8px; padding-bottom: 4px; border-bottom: 1.5px solid var(--ink); }
+.md h3 { font-size: 15px; margin: 18px 0 6px; color: var(--stamp); }
+.md p { margin: 0 0 10px; }
+.md ul, .md ol { margin: 0 0 12px; padding-left: 22px; }
+.md li { margin-bottom: 6px; }
+.md blockquote { margin: 0 0 12px; padding: 4px 12px; border-left: 3px solid var(--stamp); color: var(--ink-soft); font-style: italic; }
+.md hr { border: 0; border-top: 1px dashed var(--line-strong); margin: 18px 0; }
+.md strong { font-weight: 700; }
+.md code { font-family: var(--mono); font-size: 0.9em; background: var(--paper-2); padding: 0 3px; }
+
+@media (min-width: 480px) {
+  .sheet { padding: 24px 26px 28px; }
+  .doc { padding: 30px 30px 32px; }
+  .board__led { font-size: 14px; }
+  .board__led--small { font-size: 10px; }
+}
+
+/* ---------- Менше руху ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .doc__waiting, .doc__cursor { animation: none !important; }
+}
 
 </style>
 </head>
@@ -25,7 +522,7 @@
   </div>
 </header>
 <main class="desk" id="app"></main>
-<script type="application/json" id="scenario">{"meta":{"title":"ЦНАП Дорослого Життя","version":1,"ticketLetter":"А","totalSeals":12,"maxSealsPerWindow":4,"minAnswerLength":3,"timing":{"_comment":"Хвилини [мін, макс] — для оцінки тривалості в build.js","intro":[3,4],"freeQuestion":[2.5,3],"windowOverhead":[0.5,0.75],"scale":[0.5,0.5],"situation":[1,1.5],"seals":[0.5,0.75],"finale":[5,8]}},"ui":{"next":"Далі","back":"Назад","submit":"Подати","takeTicket":"Отримати талон","toRegistry":"Пройти до реєстратури","toWindow":"Підійти до віконця","stampIt":"Поставити штамп","sealsConfirm":"Засвідчити","emptyAnswer":"Графа не може бути порожньою. Навіть «не знаю» — відповідь, але допишіть, чому не знаєте.","chooseOption":"Оберіть один варіант — без вибору штамп не ставиться.","chooseScale":"Позначте число від 1 до 10.","sealsLeft":"печаток","sealsLastWindow":"Це останнє віконце. Не вкладені печатки згорять — так працює бюджет.","sealsNoneLeft":"Печатки скінчилися. Тут можна вкласти лише 0 — і це теж рішення.","board":{"idle":"ЕЛЕКТРОННА ЧЕРГА","registry":"ТАЛОН {ticket} → РЕЄСТРАТУРА","window":"ТАЛОН {ticket} → ВІКОНЦЕ №{n}","finale":"ТАЛОН {ticket} → ВИДАЧА ВИТЯГІВ","progress":"ВІКОНЦЕ {n}/6"}},"intro":{"boardHint":"Натисніть кнопку, щоб стати в чергу","ticketCaption":"Ваш номер у черзі","clerk":{"name":"Галина Петрівна","role":"реєстраторка"},"clerkLines":["Доброго дня. Згідно з реєстром ви вже доросла людина.","Графа «Ким хочу бути» у вашій справі не заповнена. Уже кілька років поспіль.","Не хвилюйтеся, у нас таких пів міста. Пройдіть до реєстратури, заповніть заяву, а далі — шість віконець. Довідок від мами не приймаємо."],"rules":["Проходження займе 60–75 хвилин. Краще за один раз і в тиші: прогрес поки не зберігається.","Працівники жартують, а питання — ні. Відповідайте чесно і конкретно: справу не бачить ніхто, крім вас.","На вході вам видається 12 печаток — це ваші сили й час на найближчі 90 днів. У кожному віконці ви вирішуєте, скільки вкласти: від 0 до 4. Більше не видамо — бюджет.","Наприкінці начальник відділу розгляне справу і видасть витяг: карту вашого наступного етапу на 90 днів."],"nameLabel":"Ім'я заявника","nameHint":"Як до вас звертатися у витягу","namePlaceholder":"Напр., Олена","nameEmpty":"Без імені справу не відкривають. Можна псевдонім — ми не податкова."},"application":{"title":"Реєстратура","formName":"Заява за формою Ф-1 «Про бажане життя»","clerkLines":["Реєстратура. Заява за формою Ф-1. Пишіть розбірливо.","Тут я не жартую: від заяви залежить, куди вас направлять далі."],"doneLine":"Заяву прийнято і зареєстровано. Ваше бажання жити добре внесено до реєстру. Далі — віконце №1.","questions":[{"id":"app_morning","label":"Графа 1. Звичайний ранок через рік","text":"Опишіть звичайний ранок через рік — у день, коли «все добре». Де ви прокидаєтесь, хто поруч, що робите першу годину, що чекає на вас сьогодні, як ви почуваєтесь у тілі?","hint":"Не ідеальний, а звичайний добрий день. Чим більше конкретних деталей — тим точніший витяг.","placeholder":"Я прокидаюсь о…"},{"id":"app_leave","label":"Графа 2. Що не беру з собою","text":"Що з теперішнього життя ви точно не хочете брати з собою в наступний рік? Назвіть конкретно: звички, обставини, стосунки, відчуття, способи жити.","hint":"Те, від чого всередині щось стискається, коли ви про це думаєте.","placeholder":"Я більше не хочу…"}]},"sealComments":{"0":"Нуль печаток. Зафіксовано: ця сфера найближчі 90 днів живе на самоплині.","1":"Одна печатка. Скромно, але офіційно.","2":"Дві печатки. Розважливо, записую.","3":"Три печатки. Серйозні наміри — ставлю позначку «пріоритет».","4":"Чотири! Максимум. Решта відділів уже ревнує."},"windows":[{"number":1,"key":"money","title":"Гроші","subtitle":"Відділ фінансової дорослості","clerk":{"name":"Микола Степанович","role":"старший інспектор","lines":["Віконце №1. Гроші. Довідку про доходи принесли? Ні? Звісно. Ніхто не приносить.","Сідайте. Питання тут прості, а от відповіді — ні."]},"scale":{"id":"scale_money","question":"Наскільки ви задоволені своїм фінансовим станом зараз?","low":"постійна тривога","high":"спокій і запас"},"situation":{"id":"sit_money","text":"Вам пропонують роботу: +30% до зарплати, але треба переїхати в інше місто, де ви нікого не знаєте. Відповідь чекають до п'ятниці.","options":[{"id":"money_go","text":"Погоджуюсь. Гроші зараз — це свобода потім.","reaction":"Записую: рухливий тип. Валізу тримайте біля дверей.","stamp":{"id":"FIN_GROWTH","title":"РИЗИКУЮ ЗАРАДИ ЗРОСТАННЯ"}},{"id":"money_stay","text":"Відмовляюсь. Мої люди й моє місце важливіші за 30%.","reaction":"Записую: укорінений тип. Це теж капітал, просто в банк його не покладеш.","stamp":{"id":"FIN_ROOTS","title":"КОРІННЯ ДОРОЖЧЕ ЗА ДОХІД"}},{"id":"money_deal","text":"Торгуюся: прошу віддалений формат або відстрочку на пів року.","reaction":"Записую: переговорник. Ми тут теж усе життя торгуємося — з формами.","stamp":{"id":"FIN_THIRD","title":"ШУКАЮ ТРЕТІЙ ВАРІАНТ"}}]},"questions":[{"id":"money_enough","label":"Сума спокою","byStamp":{"FIN_GROWTH":"Ви обрали зростання. Скільки грошей на місяць вам насправді потрібно, щоб відчувати спокій? Назвіть суму. І що ви готові віддати — час, звичне місце, комфорт, — щоб вийти на неї за рік?","FIN_ROOTS":"Ви обрали коріння. Скільки грошей на місяць вам насправді потрібно, щоб відчувати спокій? Назвіть суму. Що мало б змінитися там, де ви є, щоб ви заробляли її, нікуди не переїжджаючи?","FIN_THIRD":"Ви шукаєте третій варіант. Скільки грошей на місяць вам насправді потрібно, щоб відчувати спокій? Назвіть суму. І про що у своїх грошах ви давно мали б домовитися — з роботодавцем, клієнтами, близькими чи собою — і досі не домовились?"},"placeholder":"Мені потрібно … на місяць, бо…"},{"id":"money_belief","label":"Сімейна валюта","text":"Що про гроші вам «пояснили» вдома — словами чи прикладом? Як це переконання досі впливає на ваші рішення? Наведіть один приклад з останніх місяців.","placeholder":"Вдома завжди казали / робили…"}],"seals":{"question":"Скільки печаток із ваших сил і часу на 90 днів ви вкладаєте у гроші?"}},{"number":2,"key":"work","title":"Справа","subtitle":"Відділ реалізації та трудових пригод","clerk":{"name":"Ольга Василівна","role":"інспекторка з реалізації","lines":["Віконце №2. Справа. Трудову книжку, дипломи і сертифікати курсів, які ви купили й не пройшли, — усе на стіл.","Жартую. Кладіть тільки правду, вона легша."]},"scale":{"id":"scale_work","question":"Наскільки вас задовольняє те, чим ви займаєтесь зараз: робота, навчання, власна справа?","low":"відбуваю номер","high":"це моє"},"situation":{"id":"sit_work","text":"У вас стабільна робота, яка не дратує, але й не запалює. Знайомий кличе у свій проєкт, який вам справді цікавий: перші пів року — половина вашого нинішнього доходу і жодних гарантій.","options":[{"id":"work_leap","text":"Іду в проєкт. Нудьга коштує дорожче.","reaction":"Ставлю штамп. Парашут видається окремо, у віконці №1 — якщо ви туди вклали печатки.","stamp":{"id":"WORK_LEAP","title":"СТРИБАЮ В НЕВІДОМЕ"}},{"id":"work_safe","text":"Лишаюсь. Стабільність — не поразка.","reaction":"Ставлю штамп. Стабільність — наша улюблена графа, ми тут самі тридцять років стабільні.","stamp":{"id":"WORK_SAFE","title":"БЕЗПЕКА ПОНАД УСЕ"}},{"id":"work_test","text":"Лишаюсь, але три місяці роблю проєкт вечорами — перевірити.","reaction":"Ставлю штамп. Випробувальний термін — це по-нашому, по-державному.","stamp":{"id":"WORK_TEST","title":"СПЕРШУ ПЕРЕВІРЮ"}}]},"questions":[{"id":"work_own","label":"Своя справа","byStamp":{"WORK_LEAP":"Ви стрибнули. Що саме вас найбільше лякає в цьому стрибку? І що конкретно ви робили б перші 30 днів у справі, яку назвали б «своєю»?","WORK_SAFE":"Ви обрали безпеку. Від чого саме вона вас захищає — назвіть страх прямо. І що мало б змінитися на нинішньому місці, щоб ви могли назвати цю справу «своєю»?","WORK_TEST":"Ви вирішили перевірити. Які 2–3 конкретні ознаки за три місяці скажуть вам «так, це моє»? І що ви робитимете, якщо перевірка скаже «ні»?"},"placeholder":"Чесно кажучи…"},{"id":"work_flow","label":"Забув(-ла) про час","text":"Згадайте момент за останні пів року, коли ви щось робили і забули про час. Що це було? Що в ньому було такого, чого бракує решті вашої роботи чи навчання?","placeholder":"Це було, коли я…"}],"seals":{"question":"Скільки печаток ви вкладаєте у справу — роботу, навчання, реалізацію?"}},{"number":3,"key":"energy","title":"Енергія","subtitle":"Кабінет залишкових сил","clerk":{"name":"Лідія Іванівна","role":"медсестра кабінету","lines":["Віконце №3. Енергія. Довідку форми 086 не треба, я й так бачу: ви втомлені.","Покажіть, де у вас батарейка. Ага, дванадцять відсотків. Як у всіх у цій черзі."]},"scale":{"id":"scale_energy","question":"Наскільки ви задоволені своєю енергією: сном, тілом, силами на звичайний день?","low":"живу на каві й залишках","high":"прокидаюсь із силами"},"situation":{"id":"sit_energy","text":"Вечір п'ятниці. Ви виснажені після тижня. Друзі кличуть на день народження, на вас чекає недороблена робота, а тіло просить лягти о 22:00.","options":[{"id":"energy_people","text":"Іду до друзів. Люди мене заряджають.","reaction":"Позначаю: заряджається від людей. Перевіримо у віконці №4, чи це правда.","stamp":{"id":"EN_PEOPLE","title":"ЗАРЯДЖАЮСЬ ВІД ЛЮДЕЙ"}},{"id":"energy_duty","text":"Доробляю роботу. Відпочину, коли все закрию.","reaction":"Позначаю: «відпочину, коли закрию». Це найпопулярніша фраза в нашому кабінеті. Відпочинку в ній поки ніхто не дочекався.","stamp":{"id":"EN_DUTY","title":"СПОЧАТКУ ОБОВ'ЯЗОК"}},{"id":"energy_rest","text":"Лягаю спати. Без пояснень і виправдань.","reaction":"Позначаю: спить без пояснень. Рідкісний випадок, запишу в журнал досягнень.","stamp":{"id":"EN_REST","title":"СОН — ЦЕ ТЕЖ СПРАВА"}}]},"questions":[{"id":"energy_source","label":"Джерела і витоки","byStamp":{"EN_PEOPLE":"Ви обрали людей. Які саме люди й заняття вас наповнюють, а після яких ви почуваєтеся порожніми — навіть якщо «все було нормально»? Назвіть конкретно.","EN_DUTY":"Ви обрали обов'язок. Коли ви востаннє відпочивали без почуття провини? Що саме ви «маєте закрити», щоб дозволити собі відпочинок, — і чи настає цей момент хоч колись?","EN_REST":"Ви обрали сон. Як ви спите насправді: о котрій лягаєте, скільки годин, що заважає? Що змінилося б у ваших днях, якби ви висипалися хоча б п'ять ночей на тиждень?"},"placeholder":"Якщо чесно, то…"},{"id":"energy_drain","label":"Що виснажує","text":"Що забирає у вас найбільше сил прямо зараз — людина, обставина, звичка, думка? Опишіть, як це виглядає у звичайний день, і що ви вже пробували з цим робити.","placeholder":"Найбільше виснажує…"}],"seals":{"question":"Скільки печаток ви вкладаєте в енергію — сон, тіло, відновлення?"}},{"number":4,"key":"people","title":"Люди","subtitle":"Реєстр родинних і дружніх зв'язків","clerk":{"name":"Світлана Олегівна","role":"реєстраторка зв'язків","lines":["Віконце №4. Люди. Скільки у вас контактів у телефоні? Шістсот? А скільки з них можна набрати о третій ночі?","Не кажіть уголос. Запишете нижче, графи для цього й придумані."]},"scale":{"id":"scale_people","question":"Наскільки ви задоволені своїми стосунками — з партнером чи партнеркою, друзями, родиною?","low":"самотньо серед людей","high":"мене бачать і підтримують"},"situation":{"id":"sit_people","text":"Близька людина вже вдруге за місяць просить про велику послугу: позичити гроші або віддати їй кілька вихідних. А у вас самих зараз зовсім немає ресурсу.","options":[{"id":"people_give","text":"Погоджуюсь. Своїм не відмовляють.","reaction":"Фіксую: «своїх не кидаю». Шляхетно. Залишилося з'ясувати, хто не кине вас.","stamp":{"id":"PPL_GIVE","title":"СВОЇХ НЕ КИДАЮ"}},{"id":"people_no","text":"Відмовляю і чесно пояснюю, що в мене немає сил.","reaction":"Фіксую: право на «ні». Бланк відмови в нас, до речі, найтонший — а заповнити його найважче.","stamp":{"id":"PPL_NO","title":"МАЮ ПРАВО НА «НІ»"}},{"id":"people_part","text":"Пропоную менше: частину суми або один день замість усіх вихідних.","reaction":"Фіксую: часткове задоволення заяви. Класика нашого закладу.","stamp":{"id":"PPL_PART","title":"ДАЮ, СКІЛЬКИ МОЖУ"}}]},"questions":[{"id":"people_balance","label":"Баланс стосунків","byStamp":{"PPL_GIVE":"Ви обрали «своїх не кидаю». А хто не кине вас? Назвіть людей, до яких ви можете прийти зі своєю бідою, — і коли ви востаннє справді до них приходили.","PPL_NO":"Ви обрали право на «ні». Кому з близьких вам найважче відмовити і чому? Що ви боїтеся втратити, коли кажете «ні»?","PPL_PART":"Ви дали, скільки можете. У яких стосунках ви зараз даєте більше, ніж отримуєте, а в яких — навпаки? Назвіть людей і що саме відбувається."},"placeholder":"Якщо по іменах…"},{"id":"people_missing","label":"Кого бракує","text":"Яких людей або яких стосунків вам найбільше бракує зараз? Опишіть не ідеал, а що конкретно було б інакше у вашому звичайному тижні, якби вони були.","placeholder":"Мені бракує…"}],"seals":{"question":"Скільки печаток ви вкладаєте в людей — стосунки, друзів, родину?"}},{"number":5,"key":"place","title":"Місце","subtitle":"Відділ прописки, переселень і мрій про море","clerk":{"name":"Аркадій Борисович","role":"інспектор з прописки","lines":["Віконце №5. Місце. Прописка у вас є. А от чи почуваєтеся ви вдома — це в нас окрема графа.","Її зазвичай заповнюють олівцем. Щоб потім стерти."]},"scale":{"id":"scale_place","question":"Наскільки вам добре там, де і як ви живете зараз: житло, місто, свобода пересування?","low":"роками живу «тимчасово»","high":"це моє місце"},"situation":{"id":"sit_place","text":"Цього року у вас є гроші на одну велику річ: перший внесок або ремонт власного житла — чи пів року подорожей і життя в різних містах.","options":[{"id":"place_nest","text":"Вкладаю в житло. Своє — це опора.","reaction":"Реєструю: будує гніздо. Місце під вазон я вам уже виділив.","stamp":{"id":"PLACE_NEST","title":"БУДУЮ ГНІЗДО"}},{"id":"place_roam","text":"Їду. Світ не чекатиме, поки я «стану на ноги».","reaction":"Реєструю: тимчасово вибуває за межі населеного пункту. Листівки надсилайте на адресу ЦНАПу.","stamp":{"id":"PLACE_ROAM","title":"СВОБОДА ПЕРЕМІЩЕННЯ"}},{"id":"place_here","text":"Ні те, ні те: облаштовую те, що вже є, решту — в запас.","reaction":"Реєструю: облаштовує наявне. Рідкісна графа — «добре там, де я є».","stamp":{"id":"PLACE_HERE","title":"ДОБРЕ ТАМ, ДЕ Я Є"}}]},"questions":[{"id":"place_home","label":"Де мій дім","byStamp":{"PLACE_NEST":"Ви будуєте гніздо. Опишіть дім, у якому хочете жити через 2–3 роки: місто, район, що за вікном, хто живе з вами. Що з цього можна почати вже цього року?","PLACE_ROAM":"Ви обрали свободу. Від чого насправді ви хочете поїхати — і куди хочете приїхати? Що вас зараз тримає на місці, крім грошей?","PLACE_HERE":"Ви вирішили облаштувати наявне. Що конкретно у вашому житлі і місті зараз заважає жити добре — і що з цього можна змінити за місяць без великих грошей?"},"placeholder":"Мій дім — це…"},{"id":"place_free","label":"Свобода","text":"Коли за останній рік ви почувалися по-справжньому вільними? Де ви були, що робили, що в тому моменті було головним?","placeholder":"Я був(-ла) вільним(-ою), коли…"}],"seals":{"question":"Скільки печаток ви вкладаєте в місце — житло, місто, подорожі, свободу?"}},{"number":6,"key":"meaning","title":"Сенс","subtitle":"Архів сенсів (прийом за записом)","clerk":{"name":"Олександр Петрович","role":"архіваріус","lines":["Віконце №6. Сенс. Знову без довідки про сенс? Заповнюйте форму 7-Б.","Не переживайте: довідку про сенс за всю історію закладу видали тричі. І всі три рази люди виписали її собі самі."]},"scale":{"id":"scale_meaning","question":"Наскільки ваше життя зараз відчувається осмисленим — що ви живете своє, а не чуже?","low":"живу на автопілоті","high":"знаю, навіщо"},"situation":{"id":"sit_meaning","text":"Вам вісімдесят. Хтось молодий і дорогий вам питає: «Чим ти найбільше пишаєшся?» Яку відповідь вам найважливіше було б мати?","options":[{"id":"meaning_legacy","text":"Тим, що після мене лишилося щось важливе: справа, твір, ідея, яка живе далі.","reaction":"Вношу до архіву: «залишає слід». Полиця для цього в нас найширша.","stamp":{"id":"MEAN_LEGACY","title":"ЗАЛИШАЮ СЛІД"}},{"id":"meaning_love","text":"Людьми, яких я любив(-ла), і тим, як ми жили разом.","reaction":"Вношу до архіву: «любов — основний документ». Інші довідки до неї — лише додатки.","stamp":{"id":"MEAN_LOVE","title":"ЛЮБОВ — ГОЛОВНИЙ ДОКУМЕНТ"}},{"id":"meaning_self","text":"Тим, що це було моє життя, а не чуже: я пробував(-ла), помилявся(-лася) і не зраджував(-ла) себе.","reaction":"Вношу до архіву: «жив(-ла) своє». Такі справи в нас не пилюжаться — їх часто перечитують.","stamp":{"id":"MEAN_SELF","title":"ЖИВУ СВОЄ, НЕ ЧУЖЕ"}}]},"questions":[{"id":"meaning_now","label":"Сенс сьогодні","byStamp":{"MEAN_LEGACY":"Ви обрали слід. Що саме ви хотіли б залишити — назвіть одну конкретну річ. Скільки годин на тиждень ви зараз реально на неї витрачаєте?","MEAN_LOVE":"Ви обрали любов. Кому з близьких ви давно не казали, що він чи вона для вас значить? Що заважає сказати це цього тижня?","MEAN_SELF":"Ви обрали жити своє. Де у вашому житті ви зараз живете за чужим сценарієм — батьків, партнера, оточення, себе колишнього? Назвіть конкретно."},"placeholder":"Якщо конкретно…"},{"id":"meaning_year","label":"Один рік","text":"Уявіть, що у вас лишився рівно рік життя при повному здоров'ї. Що ви перестали б робити з наступного понеділка, а що почали б?","placeholder":"Я перестав(-ла) би… Я почав(-ла) би…"}],"seals":{"question":"Скільки печаток ви вкладаєте в сенс — те, навіщо все інше?"}}],"finale":{"title":"Видача витягів","clerk":{"name":"Галина Петрівна","role":"реєстраторка"},"clerkLines":["Шість віконець пройдено. Ваша особова справа товща за мій журнал відпусток, і це комплімент.","Тепер справу розгляне начальник відділу Дорослого Життя. Він читає уважно, без шаблонів і без «просто вірте в себе»."],"summaryTitle":"Зведення по справі","keyLabel":"Ключ Anthropic API","keyHint":"Ключ тримається лише в пам'яті цієї вкладки: ніде не зберігається і нікуди, крім Anthropic, не надсилається.","keyPlaceholder":"sk-ant-…","sendButton":"Передати справу на розгляд","copyButton":"Скопіювати справу","copyHint":"Немає ключа? Скопіюйте справу і вставте в чат з Claude — там уже є повна інструкція для розгляду.","copied":"Справу скопійовано. Вставте її в чат з Claude.","copyFailed":"Не вдалося скопіювати автоматично. Виділіть текст нижче і скопіюйте вручну.","waiting":"Справа на розгляді. Начальник гортає сторінки…","keyEmpty":"Без ключа розгляд неможливий. Вставте ключ або скористайтеся кнопкою «Скопіювати справу».","errorPrefix":"Розгляд зірвався:"},"extract":{"title":"Витяг з Реєстру Наступного Етапу","numberPrefix":"РНЕ","issuer":"Центр надання адміністративних послуг Дорослого Життя","applicantLabel":"Заявник","dateLabel":"Дата видачі","validLabel":"Чинний до","validDays":90,"signature":"Начальник відділу Дорослого Життя","sealOuter":"ЦНАП ДОРОСЛОГО ЖИТТЯ • ВІДДІЛ НАСТУПНОГО ЕТАПУ •","sealInner":"ЗАСВІДЧЕНО","copyButton":"Скопіювати витяг","downloadButton":"Завантажити (.md)","copied":"Витяг скопійовано.","restartButton":"Почати нову справу","footer":"Витяг складено на підставі власноручних відповідей заявника. Виконання — на совісті заявника."}}</script>
+<script type="application/json" id="scenario">{"meta":{"title":"ЦНАП Дорослого Життя","version":1,"ticketLetter":"А","totalSeals":12,"maxSealsPerWindow":4,"minAnswerLength":3,"timing":{"_comment":"Хвилини [мін, макс] — для оцінки тривалості в build.js","intro":[3,4],"freeQuestion":[2.5,3],"windowOverhead":[0.5,0.75],"scale":[0.5,0.5],"situation":[1,1.5],"seals":[0.5,0.75],"finale":[5,8]}},"ui":{"next":"Далі","back":"Назад","submit":"Подати","takeTicket":"Отримати талон","toRegistry":"Пройти до реєстратури","toWindow":"Підійти до віконця","stampIt":"Поставити штамп","sealsConfirm":"Засвідчити","emptyAnswer":"Графа не може бути порожньою. Навіть «не знаю» — відповідь, але допишіть, чому не знаєте.","chooseOption":"Оберіть один варіант — без вибору штамп не ставиться.","chooseScale":"Позначте число від 1 до 10.","sealsLeft":"печаток","sealsLastWindow":"Це останнє віконце. Не вкладені печатки згорять — так працює бюджет.","sealsNoneLeft":"Печатки скінчилися. Тут можна вкласти лише 0 — і це теж рішення.","board":{"idle":"ЕЛЕКТРОННА ЧЕРГА","registry":"ТАЛОН {ticket} > РЕЄСТРАТУРА","window":"ТАЛОН {ticket} > ВІКОНЦЕ №{n}","finale":"ТАЛОН {ticket} > ВИДАЧА ВИТЯГІВ","progress":"ВІКОНЦЕ {n}/6"}},"intro":{"boardHint":"Натисніть кнопку, щоб стати в чергу","ticketCaption":"Ваш номер у черзі","clerk":{"name":"Галина Петрівна","role":"реєстраторка"},"clerkLines":["Доброго дня. Згідно з реєстром ви вже доросла людина.","Графа «Ким хочу бути» у вашій справі не заповнена. Уже кілька років поспіль.","Не хвилюйтеся, у нас таких пів міста. Пройдіть до реєстратури, заповніть заяву, а далі — шість віконець. Довідок від мами не приймаємо."],"rules":["Проходження займе 60–75 хвилин. Краще за один раз і в тиші: прогрес поки не зберігається.","Працівники жартують, а питання — ні. Відповідайте чесно і конкретно: справу не бачить ніхто, крім вас.","На вході вам видається 12 печаток — це ваші сили й час на найближчі 90 днів. У кожному віконці ви вирішуєте, скільки вкласти: від 0 до 4. Більше не видамо — бюджет.","Наприкінці начальник відділу розгляне справу і видасть витяг: карту вашого наступного етапу на 90 днів."],"nameLabel":"Ім'я заявника","nameHint":"Як до вас звертатися у витягу","namePlaceholder":"Напр., Олена","nameEmpty":"Без імені справу не відкривають. Можна псевдонім — ми не податкова."},"application":{"title":"Реєстратура","formName":"Заява за формою Ф-1 «Про бажане життя»","clerkLines":["Реєстратура. Заява за формою Ф-1. Пишіть розбірливо.","Тут я не жартую: від заяви залежить, куди вас направлять далі."],"doneLine":"Заяву прийнято і зареєстровано. Ваше бажання жити добре внесено до реєстру. Далі — віконце №1.","questions":[{"id":"app_morning","label":"Графа 1. Звичайний ранок через рік","text":"Опишіть звичайний ранок через рік — у день, коли «все добре». Де ви прокидаєтесь, хто поруч, що робите першу годину, що чекає на вас сьогодні, як ви почуваєтесь у тілі?","hint":"Не ідеальний, а звичайний добрий день. Чим більше конкретних деталей — тим точніший витяг.","placeholder":"Я прокидаюсь о…"},{"id":"app_leave","label":"Графа 2. Що не беру з собою","text":"Що з теперішнього життя ви точно не хочете брати з собою в наступний рік? Назвіть конкретно: звички, обставини, стосунки, відчуття, способи жити.","hint":"Те, від чого всередині щось стискається, коли ви про це думаєте.","placeholder":"Я більше не хочу…"}]},"sealComments":{"0":"Нуль печаток. Зафіксовано: ця сфера найближчі 90 днів живе на самоплині.","1":"Одна печатка. Скромно, але офіційно.","2":"Дві печатки. Розважливо, записую.","3":"Три печатки. Серйозні наміри — ставлю позначку «пріоритет».","4":"Чотири! Максимум. Решта відділів уже ревнує."},"windows":[{"number":1,"key":"money","title":"Гроші","subtitle":"Відділ фінансової дорослості","clerk":{"name":"Микола Степанович","role":"старший інспектор","lines":["Віконце №1. Гроші. Довідку про доходи принесли? Ні? Звісно. Ніхто не приносить.","Сідайте. Питання тут прості, а от відповіді — ні."]},"scale":{"id":"scale_money","question":"Наскільки ви задоволені своїм фінансовим станом зараз?","low":"постійна тривога","high":"спокій і запас"},"situation":{"id":"sit_money","text":"Вам пропонують роботу: +30% до зарплати, але треба переїхати в інше місто, де ви нікого не знаєте. Відповідь чекають до п'ятниці.","options":[{"id":"money_go","text":"Погоджуюсь. Гроші зараз — це свобода потім.","reaction":"Записую: рухливий тип. Валізу тримайте біля дверей.","stamp":{"id":"FIN_GROWTH","title":"РИЗИКУЮ ЗАРАДИ ЗРОСТАННЯ"}},{"id":"money_stay","text":"Відмовляюсь. Мої люди й моє місце важливіші за 30%.","reaction":"Записую: укорінений тип. Це теж капітал, просто в банк його не покладеш.","stamp":{"id":"FIN_ROOTS","title":"КОРІННЯ ДОРОЖЧЕ ЗА ДОХІД"}},{"id":"money_deal","text":"Торгуюся: прошу віддалений формат або відстрочку на пів року.","reaction":"Записую: переговорник. Ми тут теж усе життя торгуємося — з формами.","stamp":{"id":"FIN_THIRD","title":"ШУКАЮ ТРЕТІЙ ВАРІАНТ"}}]},"questions":[{"id":"money_enough","label":"Сума спокою","byStamp":{"FIN_GROWTH":"Ви обрали зростання. Скільки грошей на місяць вам насправді потрібно, щоб відчувати спокій? Назвіть суму. І що ви готові віддати — час, звичне місце, комфорт, — щоб вийти на неї за рік?","FIN_ROOTS":"Ви обрали коріння. Скільки грошей на місяць вам насправді потрібно, щоб відчувати спокій? Назвіть суму. Що мало б змінитися там, де ви є, щоб ви заробляли її, нікуди не переїжджаючи?","FIN_THIRD":"Ви шукаєте третій варіант. Скільки грошей на місяць вам насправді потрібно, щоб відчувати спокій? Назвіть суму. І про що у своїх грошах ви давно мали б домовитися — з роботодавцем, клієнтами, близькими чи собою — і досі не домовились?"},"placeholder":"Мені потрібно … на місяць, бо…"},{"id":"money_belief","label":"Сімейна валюта","text":"Що про гроші вам «пояснили» вдома — словами чи прикладом? Як це переконання досі впливає на ваші рішення? Наведіть один приклад з останніх місяців.","placeholder":"Вдома завжди казали / робили…"}],"seals":{"question":"Скільки печаток із ваших сил і часу на 90 днів ви вкладаєте у гроші?"}},{"number":2,"key":"work","title":"Справа","subtitle":"Відділ реалізації та трудових пригод","clerk":{"name":"Ольга Василівна","role":"інспекторка з реалізації","lines":["Віконце №2. Справа. Трудову книжку, дипломи і сертифікати курсів, які ви купили й не пройшли, — усе на стіл.","Жартую. Кладіть тільки правду, вона легша."]},"scale":{"id":"scale_work","question":"Наскільки вас задовольняє те, чим ви займаєтесь зараз: робота, навчання, власна справа?","low":"відбуваю номер","high":"це моє"},"situation":{"id":"sit_work","text":"У вас стабільна робота, яка не дратує, але й не запалює. Знайомий кличе у свій проєкт, який вам справді цікавий: перші пів року — половина вашого нинішнього доходу і жодних гарантій.","options":[{"id":"work_leap","text":"Іду в проєкт. Нудьга коштує дорожче.","reaction":"Ставлю штамп. Парашут видається окремо, у віконці №1 — якщо ви туди вклали печатки.","stamp":{"id":"WORK_LEAP","title":"СТРИБАЮ В НЕВІДОМЕ"}},{"id":"work_safe","text":"Лишаюсь. Стабільність — не поразка.","reaction":"Ставлю штамп. Стабільність — наша улюблена графа, ми тут самі тридцять років стабільні.","stamp":{"id":"WORK_SAFE","title":"БЕЗПЕКА ПОНАД УСЕ"}},{"id":"work_test","text":"Лишаюсь, але три місяці роблю проєкт вечорами — перевірити.","reaction":"Ставлю штамп. Випробувальний термін — це по-нашому, по-державному.","stamp":{"id":"WORK_TEST","title":"СПЕРШУ ПЕРЕВІРЮ"}}]},"questions":[{"id":"work_own","label":"Своя справа","byStamp":{"WORK_LEAP":"Ви стрибнули. Що саме вас найбільше лякає в цьому стрибку? І що конкретно ви робили б перші 30 днів у справі, яку назвали б «своєю»?","WORK_SAFE":"Ви обрали безпеку. Від чого саме вона вас захищає — назвіть страх прямо. І що мало б змінитися на нинішньому місці, щоб ви могли назвати цю справу «своєю»?","WORK_TEST":"Ви вирішили перевірити. Які 2–3 конкретні ознаки за три місяці скажуть вам «так, це моє»? І що ви робитимете, якщо перевірка скаже «ні»?"},"placeholder":"Чесно кажучи…"},{"id":"work_flow","label":"Забув(-ла) про час","text":"Згадайте момент за останні пів року, коли ви щось робили і забули про час. Що це було? Що в ньому було такого, чого бракує решті вашої роботи чи навчання?","placeholder":"Це було, коли я…"}],"seals":{"question":"Скільки печаток ви вкладаєте у справу — роботу, навчання, реалізацію?"}},{"number":3,"key":"energy","title":"Енергія","subtitle":"Кабінет залишкових сил","clerk":{"name":"Лідія Іванівна","role":"медсестра кабінету","lines":["Віконце №3. Енергія. Довідку форми 086 не треба, я й так бачу: ви втомлені.","Покажіть, де у вас батарейка. Ага, дванадцять відсотків. Як у всіх у цій черзі."]},"scale":{"id":"scale_energy","question":"Наскільки ви задоволені своєю енергією: сном, тілом, силами на звичайний день?","low":"живу на каві й залишках","high":"прокидаюсь із силами"},"situation":{"id":"sit_energy","text":"Вечір п'ятниці. Ви виснажені після тижня. Друзі кличуть на день народження, на вас чекає недороблена робота, а тіло просить лягти о 22:00.","options":[{"id":"energy_people","text":"Іду до друзів. Люди мене заряджають.","reaction":"Позначаю: заряджається від людей. Перевіримо у віконці №4, чи це правда.","stamp":{"id":"EN_PEOPLE","title":"ЗАРЯДЖАЮСЬ ВІД ЛЮДЕЙ"}},{"id":"energy_duty","text":"Доробляю роботу. Відпочину, коли все закрию.","reaction":"Позначаю: «відпочину, коли закрию». Це найпопулярніша фраза в нашому кабінеті. Відпочинку в ній поки ніхто не дочекався.","stamp":{"id":"EN_DUTY","title":"СПОЧАТКУ ОБОВ'ЯЗОК"}},{"id":"energy_rest","text":"Лягаю спати. Без пояснень і виправдань.","reaction":"Позначаю: спить без пояснень. Рідкісний випадок, запишу в журнал досягнень.","stamp":{"id":"EN_REST","title":"СОН — ЦЕ ТЕЖ СПРАВА"}}]},"questions":[{"id":"energy_source","label":"Джерела і витоки","byStamp":{"EN_PEOPLE":"Ви обрали людей. Які саме люди й заняття вас наповнюють, а після яких ви почуваєтеся порожніми — навіть якщо «все було нормально»? Назвіть конкретно.","EN_DUTY":"Ви обрали обов'язок. Коли ви востаннє відпочивали без почуття провини? Що саме ви «маєте закрити», щоб дозволити собі відпочинок, — і чи настає цей момент хоч колись?","EN_REST":"Ви обрали сон. Як ви спите насправді: о котрій лягаєте, скільки годин, що заважає? Що змінилося б у ваших днях, якби ви висипалися хоча б п'ять ночей на тиждень?"},"placeholder":"Якщо чесно, то…"},{"id":"energy_drain","label":"Що виснажує","text":"Що забирає у вас найбільше сил прямо зараз — людина, обставина, звичка, думка? Опишіть, як це виглядає у звичайний день, і що ви вже пробували з цим робити.","placeholder":"Найбільше виснажує…"}],"seals":{"question":"Скільки печаток ви вкладаєте в енергію — сон, тіло, відновлення?"}},{"number":4,"key":"people","title":"Люди","subtitle":"Реєстр родинних і дружніх зв'язків","clerk":{"name":"Світлана Олегівна","role":"реєстраторка зв'язків","lines":["Віконце №4. Люди. Скільки у вас контактів у телефоні? Шістсот? А скільки з них можна набрати о третій ночі?","Не кажіть уголос. Запишете нижче, графи для цього й придумані."]},"scale":{"id":"scale_people","question":"Наскільки ви задоволені своїми стосунками — з партнером чи партнеркою, друзями, родиною?","low":"самотньо серед людей","high":"мене бачать і підтримують"},"situation":{"id":"sit_people","text":"Близька людина вже вдруге за місяць просить про велику послугу: позичити гроші або віддати їй кілька вихідних. А у вас самих зараз зовсім немає ресурсу.","options":[{"id":"people_give","text":"Погоджуюсь. Своїм не відмовляють.","reaction":"Фіксую: «своїх не кидаю». Шляхетно. Залишилося з'ясувати, хто не кине вас.","stamp":{"id":"PPL_GIVE","title":"СВОЇХ НЕ КИДАЮ"}},{"id":"people_no","text":"Відмовляю і чесно пояснюю, що в мене немає сил.","reaction":"Фіксую: право на «ні». Бланк відмови в нас, до речі, найтонший — а заповнити його найважче.","stamp":{"id":"PPL_NO","title":"МАЮ ПРАВО НА «НІ»"}},{"id":"people_part","text":"Пропоную менше: частину суми або один день замість усіх вихідних.","reaction":"Фіксую: часткове задоволення заяви. Класика нашого закладу.","stamp":{"id":"PPL_PART","title":"ДАЮ, СКІЛЬКИ МОЖУ"}}]},"questions":[{"id":"people_balance","label":"Баланс стосунків","byStamp":{"PPL_GIVE":"Ви обрали «своїх не кидаю». А хто не кине вас? Назвіть людей, до яких ви можете прийти зі своєю бідою, — і коли ви востаннє справді до них приходили.","PPL_NO":"Ви обрали право на «ні». Кому з близьких вам найважче відмовити і чому? Що ви боїтеся втратити, коли кажете «ні»?","PPL_PART":"Ви дали, скільки можете. У яких стосунках ви зараз даєте більше, ніж отримуєте, а в яких — навпаки? Назвіть людей і що саме відбувається."},"placeholder":"Якщо по іменах…"},{"id":"people_missing","label":"Кого бракує","text":"Яких людей або яких стосунків вам найбільше бракує зараз? Опишіть не ідеал, а що конкретно було б інакше у вашому звичайному тижні, якби вони були.","placeholder":"Мені бракує…"}],"seals":{"question":"Скільки печаток ви вкладаєте в людей — стосунки, друзів, родину?"}},{"number":5,"key":"place","title":"Місце","subtitle":"Відділ прописки, переселень і мрій про море","clerk":{"name":"Аркадій Борисович","role":"інспектор з прописки","lines":["Віконце №5. Місце. Прописка у вас є. А от чи почуваєтеся ви вдома — це в нас окрема графа.","Її зазвичай заповнюють олівцем. Щоб потім стерти."]},"scale":{"id":"scale_place","question":"Наскільки вам добре там, де і як ви живете зараз: житло, місто, свобода пересування?","low":"роками живу «тимчасово»","high":"це моє місце"},"situation":{"id":"sit_place","text":"Цього року у вас є гроші на одну велику річ: перший внесок або ремонт власного житла — чи пів року подорожей і життя в різних містах.","options":[{"id":"place_nest","text":"Вкладаю в житло. Своє — це опора.","reaction":"Реєструю: будує гніздо. Місце під вазон я вам уже виділив.","stamp":{"id":"PLACE_NEST","title":"БУДУЮ ГНІЗДО"}},{"id":"place_roam","text":"Їду. Світ не чекатиме, поки я «стану на ноги».","reaction":"Реєструю: тимчасово вибуває за межі населеного пункту. Листівки надсилайте на адресу ЦНАПу.","stamp":{"id":"PLACE_ROAM","title":"СВОБОДА ПЕРЕМІЩЕННЯ"}},{"id":"place_here","text":"Ні те, ні те: облаштовую те, що вже є, решту — в запас.","reaction":"Реєструю: облаштовує наявне. Рідкісна графа — «добре там, де я є».","stamp":{"id":"PLACE_HERE","title":"ДОБРЕ ТАМ, ДЕ Я Є"}}]},"questions":[{"id":"place_home","label":"Де мій дім","byStamp":{"PLACE_NEST":"Ви будуєте гніздо. Опишіть дім, у якому хочете жити через 2–3 роки: місто, район, що за вікном, хто живе з вами. Що з цього можна почати вже цього року?","PLACE_ROAM":"Ви обрали свободу. Від чого насправді ви хочете поїхати — і куди хочете приїхати? Що вас зараз тримає на місці, крім грошей?","PLACE_HERE":"Ви вирішили облаштувати наявне. Що конкретно у вашому житлі і місті зараз заважає жити добре — і що з цього можна змінити за місяць без великих грошей?"},"placeholder":"Мій дім — це…"},{"id":"place_free","label":"Свобода","text":"Коли за останній рік ви почувалися по-справжньому вільними? Де ви були, що робили, що в тому моменті було головним?","placeholder":"Я був(-ла) вільним(-ою), коли…"}],"seals":{"question":"Скільки печаток ви вкладаєте в місце — житло, місто, подорожі, свободу?"}},{"number":6,"key":"meaning","title":"Сенс","subtitle":"Архів сенсів (прийом за записом)","clerk":{"name":"Олександр Петрович","role":"архіваріус","lines":["Віконце №6. Сенс. Знову без довідки про сенс? Заповнюйте форму 7-Б.","Не переживайте: довідку про сенс за всю історію закладу видали тричі. І всі три рази люди виписали її собі самі."]},"scale":{"id":"scale_meaning","question":"Наскільки ваше життя зараз відчувається осмисленим — що ви живете своє, а не чуже?","low":"живу на автопілоті","high":"знаю, навіщо"},"situation":{"id":"sit_meaning","text":"Вам вісімдесят. Хтось молодий і дорогий вам питає: «Чим ти найбільше пишаєшся?» Яку відповідь вам найважливіше було б мати?","options":[{"id":"meaning_legacy","text":"Тим, що після мене лишилося щось важливе: справа, твір, ідея, яка живе далі.","reaction":"Вношу до архіву: «залишає слід». Полиця для цього в нас найширша.","stamp":{"id":"MEAN_LEGACY","title":"ЗАЛИШАЮ СЛІД"}},{"id":"meaning_love","text":"Людьми, яких я любив(-ла), і тим, як ми жили разом.","reaction":"Вношу до архіву: «любов — основний документ». Інші довідки до неї — лише додатки.","stamp":{"id":"MEAN_LOVE","title":"ЛЮБОВ — ГОЛОВНИЙ ДОКУМЕНТ"}},{"id":"meaning_self","text":"Тим, що це було моє життя, а не чуже: я пробував(-ла), помилявся(-лася) і не зраджував(-ла) себе.","reaction":"Вношу до архіву: «жив(-ла) своє». Такі справи в нас не пилюжаться — їх часто перечитують.","stamp":{"id":"MEAN_SELF","title":"ЖИВУ СВОЄ, НЕ ЧУЖЕ"}}]},"questions":[{"id":"meaning_now","label":"Сенс сьогодні","byStamp":{"MEAN_LEGACY":"Ви обрали слід. Що саме ви хотіли б залишити — назвіть одну конкретну річ. Скільки годин на тиждень ви зараз реально на неї витрачаєте?","MEAN_LOVE":"Ви обрали любов. Кому з близьких ви давно не казали, що він чи вона для вас значить? Що заважає сказати це цього тижня?","MEAN_SELF":"Ви обрали жити своє. Де у вашому житті ви зараз живете за чужим сценарієм — батьків, партнера, оточення, себе колишнього? Назвіть конкретно."},"placeholder":"Якщо конкретно…"},{"id":"meaning_year","label":"Один рік","text":"Уявіть, що у вас лишився рівно рік життя при повному здоров'ї. Що ви перестали б робити з наступного понеділка, а що почали б?","placeholder":"Я перестав(-ла) би… Я почав(-ла) би…"}],"seals":{"question":"Скільки печаток ви вкладаєте в сенс — те, навіщо все інше?"}}],"finale":{"title":"Видача витягів","clerk":{"name":"Галина Петрівна","role":"реєстраторка"},"clerkLines":["Шість віконець пройдено. Ваша особова справа товща за мій журнал відпусток, і це комплімент.","Тепер справу розгляне начальник відділу Дорослого Життя. Він читає уважно, без шаблонів і без «просто вірте в себе»."],"summaryTitle":"Зведення по справі","keyLabel":"Ключ Anthropic API","keyHint":"Ключ тримається лише в пам'яті цієї вкладки: ніде не зберігається і нікуди, крім Anthropic, не надсилається.","keyPlaceholder":"sk-ant-…","sendButton":"Передати справу на розгляд","copyButton":"Скопіювати справу","copyHint":"Немає ключа? Скопіюйте справу і вставте в чат з Claude — там уже є повна інструкція для розгляду.","copied":"Справу скопійовано. Вставте її в чат з Claude.","copyFailed":"Не вдалося скопіювати автоматично. Виділіть текст нижче і скопіюйте вручну.","waiting":"Справа на розгляді. Начальник гортає сторінки…","keyEmpty":"Без ключа розгляд неможливий. Вставте ключ або скористайтеся кнопкою «Скопіювати справу».","errorPrefix":"Розгляд зірвався:"},"extract":{"title":"Витяг з Реєстру Наступного Етапу","numberPrefix":"РНЕ","issuer":"Центр надання адміністративних послуг Дорослого Життя","applicantLabel":"Заявник","dateLabel":"Дата видачі","validLabel":"Чинний до","validDays":90,"signature":"Начальник відділу Дорослого Життя","sealOuter":"ЦНАП ДОРОСЛОГО ЖИТТЯ • ВІДДІЛ НАСТУПНОГО ЕТАПУ •","sealInner":"ЗАСВІДЧЕНО","copyButton":"Скопіювати витяг","downloadButton":"Завантажити (.md)","copied":"Витяг скопійовано.","restartButton":"Почати нову справу","footer":"Витяг складено на підставі власноручних відповідей заявника. Виконання — на совісті заявника."}}</script>
 <script>
 /* ==== md.js ==== */
 // Мінімальний markdown → HTML (заповнюється у спрінті 5).
@@ -145,7 +642,7 @@ var CnapApi = {};
     if (!state.ticket) main = U.board.idle;
     else if (step.type === 'intro' || step.type === 'appQuestion') { main = fmt(U.board.registry, vars); progress = 'ЗАЯВА Ф-1'; }
     else if (step.w) { main = fmt(U.board.window, vars); progress = fmt(U.board.progress, vars); }
-    else { main = fmt(U.board.finale, vars); progress = 'ВІКОНЦЕ 6/6 ✓'; }
+    else { main = fmt(U.board.finale, vars); progress = 'ВІКОНЦЕ 6/6'; }
 
     boardMain.textContent = main;
     boardProgress.textContent = progress;
