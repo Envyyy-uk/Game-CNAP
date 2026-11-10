@@ -456,7 +456,7 @@
       return h('tr', null,
         h('th', { scope: 'row', text: w.number + '. ' + w.title }),
         h('td', { text: (state.scales[w.key] || '—') + '/10' }),
-        h('td', { text: state.seals[w.key] !== undefined ? '🔖'.repeat(state.seals[w.key]) || '0' : '—' }),
+        h('td', { text: state.seals[w.key] !== undefined ? state.seals[w.key] + ' з ' + TOTAL : '—' }),
         h('td', { class: 'summary__stamp', text: state.stamps[w.key] ? state.stamps[w.key].title : '—' }));
     });
     var left = sealsLeft();
@@ -624,7 +624,7 @@
         }),
         h('button', {
           class: 'btn btn--ghost', type: 'button', text: E.downloadButton,
-          onclick: function () { download('vytiah-' + state.ticket + '.md', extractMarkdownFile()); }
+          onclick: function () { download('vytiah-' + state.ticket.replace(/\D/g, '') + '.md', extractMarkdownFile()); }
         }),
         status,
         h('button', {
