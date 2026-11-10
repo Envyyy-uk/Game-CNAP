@@ -23,7 +23,7 @@ function validateScenario(s) {
   const need = (cond, msg) => { if (!cond) errors.push(msg); };
   need(s.meta && Number.isInteger(s.meta.totalSeals), 'meta.totalSeals має бути цілим числом');
   need(s.meta && Number.isInteger(s.meta.maxSealsPerWindow), 'meta.maxSealsPerWindow має бути цілим числом');
-  need(s.intro && Array.isArray(s.intro.clerk), 'intro.clerk — масив реплік');
+  need(s.intro && Array.isArray(s.intro.clerkLines), 'intro.clerkLines — масив реплік');
   need(s.application && Array.isArray(s.application.questions) && s.application.questions.length >= 1,
     'application.questions — хоча б одне питання');
   need(Array.isArray(s.windows) && s.windows.length === 6, 'має бути рівно 6 віконець');
